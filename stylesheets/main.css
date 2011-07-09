@@ -1,0 +1,35 @@
+html, body {
+	background: #ccc;
+	font-size: 1.2em;
+}
+
+h1 {
+	text-align: center;
+}
+
+form {
+	text-align: center;
+}
+
+ul {
+	list-style-type: none;
+	padding: 0;
+}
+
+li.hentry {
+	list-style-type: none;
+	display: block;
+	border-bottom: 1px dotted black;
+	padding: 1.5em;
+}
+
+.hentry .author:after {
+	margin-left: -0.3em;
+	content: ": ";
+}
+
+.hentry .published {
+	display: block;
+	text-align: right;
+	font-size: 0.5em;
+}

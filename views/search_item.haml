@@ -1,0 +1,9 @@
+-# encoding: utf-8
+-# TODO: clean this up when xapian-fu takes the patches
+%li.hentry
+	%span.vcard.author
+		%a.fn.url{:href => YAML::load(item[:author])[:url]}= YAML::load(item[:author])[:fn]
+	%span.entry-content
+		!= item[:content_full].force_encoding('utf-8')
+	%a.published{:rel => "bookmark", :href => item[:bookmark]}
+		= Time.at(item[:published].unpack('G')[0])
