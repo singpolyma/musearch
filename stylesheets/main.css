@@ -1,6 +1,6 @@
 html, body {
 	background: #ccc;
-	font-size: 1.2em;
+	font-size: 1.1em;
 }
 
 h1 {
@@ -31,5 +31,13 @@ li.hentry {
 .hentry .published {
 	display: block;
 	text-align: right;
-	font-size: 0.5em;
+	font-size: 0.6em;
+}
+
+footer {
+	display: block;
+	margin-top: 1em;
+	padding-top: 1em;
+	text-align: right;
+	font-size: 0.6em;
 }
