@@ -36,8 +36,13 @@ li.hentry {
 
 footer {
 	display: block;
-	margin-top: 1em;
-	padding-top: 1em;
+	margin-top: 2em;
+	padding-top: 2em;
 	text-align: right;
 	font-size: 0.6em;
+}
+
+footer p {
+	display: inline;
+	padding-right: 4em;
 }
