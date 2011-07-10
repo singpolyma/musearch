@@ -12,10 +12,11 @@ require 'hmac-sha1'
 require 'http_router'
 require 'rack/accept_media_types'
 
-require 'lib/xml_feed_polyglot'
 require 'lib/path_info_fix'
 require 'lib/subdirectory_routing'
 require 'lib/util'
+require 'lib/xapian-schema'
+require 'lib/xml_feed_polyglot'
 
 $config = YAML::load_file('config.yaml')
 
@@ -31,15 +32,10 @@ run HttpRouter.new {
 		require 'controllers/index'
 		IndexController.new(env).render
 	}
-=begin
+
 	get('/pshb').head.to { |env|
-		req = ::Rack::Request.new(env)
-		are_subscribers = (open(File.join($config['data_dir'], u(req['topic']))).read rescue '') !~ /^\s*$/
-		if req['hub.mode'] == 'subscribe' ? are_subscribers : !are_subscribers
-			[200, {}, req['hub.challenge']]
-		else
-			[404, {'Content-Type' => 'text/plain; charset=utf-8'}, "No one wants #{req['topic']}"]
-		end
+		# Honestly, we want all the data :)
+		[200, {}, req['hub.challenge']]
 	}
 
 	post('/pshb').to lambda { |env|
@@ -65,12 +61,47 @@ run HttpRouter.new {
 
 		meta[:self] = req.GET['topic'] if req.GET['topic'] # We know the topic, so use it
 
-		hatom = items.map {|i| make_hatom_item(meta, i) }.join
-		open(File.join($config['data_dir'], 'tmp', Digest::MD5.hexdigest(data)), 'w') { |fh|
-			fh.write hatom
-		}
+		meta[:author][:photo] = meta[:logo] if meta[:author] && meta[:logo]
+
+		items.each do |item|
+			to = Nokogiri::parse('<span>' + item[:content] + '</span>').search('.vcard').map {|el|
+				{
+					:url => el.at('.url').attributes['href'].to_s,
+					:fn  => strip_tags(el.at('.fn').inner_html).strip
+				}
+			}
+			unless item[:source]
+				item[:source] = {
+					:self  => meta[:self],
+					:id    => meta[:id],
+					:title => meta[:title]
+				}
+			end
+			xa << {
+				:content_full => item[:content],
+				:content      => strip_tags(item[:content]),
+				:category     => item[:category],
+				:in_reply_to  => item[:in_reply_to],
+				:bookmark     => item[:bookmark],
+				:id           => item[:id],
+				:author       => item[:author] || meta[:author],
+				:to           => to,
+				:published    => item[:published],
+				:source       => item[:source],
+			}
+		end
+
+		try_count = 0
+		begin
+			xa.flush
+		rescue DatabaseLockError
+			try_count += 1
+			raise $! unless try_count < 10
+			sleep 1
+			retry
+		end
+
 
 		[200, {'Content-Type' => 'text/plain; charset=utf-8'}, "Success\n"]
 	}
-=end
 }
