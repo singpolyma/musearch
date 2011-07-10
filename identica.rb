@@ -45,6 +45,14 @@ feed.each do |item|
 	}
 end
 
-xa.flush
+try_count = 0
+begin
+	xa.flush
+rescue DatabaseLockError
+	try_count += 1
+	raise $! unless try_count < 10
+	sleep 1
+	retry
+end
 
 open(File.dirname(__FILE__) + '/db/identica_last_id', 'w') {|fh| fh.write new_last_id }
