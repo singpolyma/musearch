@@ -1,30 +1,17 @@
 #encoding: utf-8
 require 'net/https'
 
-class AlmostNil
-	def method_missing(*args)
-		self
-	end
-
-	def to_s
-		''
-	end
-
-	def inspect
-		'AlmostNil'
-	end
-
-	def nil?
-		true
-	end
-end
-
-def an(a)
-	if a.nil?
-		AlmostNil.new
-	else
-		a
-	end
+# Eat nils
+def an(o)
+        if o.nil?
+                Class.new {
+                        def method_missing(*args)
+                                nil
+                        end
+                }.new
+        else
+                o
+        end
 end
 
 def strip_tags(s)
