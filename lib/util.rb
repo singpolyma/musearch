@@ -80,6 +80,16 @@ def fetch(topic, fetch=nil, temp=false)
 			response['location'] = relative_to_absolute(response['location'], fetch).to_s
 			fetch(topic, response['location'], true)
 		when 200
+			charset = response['content-type'].to_s.scan(/charset=([\w-]+)/)[0][0] rescue nil
+			if !charset && response['content-type'].to_s =~ /html/
+				charset = response.body.scan(/charset=\"?([\w-]+)/)[0][0] rescue nil
+			end
+			if charset
+				response.body = response.body.force_encoding(charset).encode('utf-8', :undef => :replace) rescue response.body.force_encoding('utf-8')
+			else
+				response.body.force_encoding('utf-8')
+			end
+			response.body = response.body.force_encoding('binary').encode('utf-8', :undef => :replace) unless response.body.valid_encoding?
 			[topic, response]
 		else
 			raise response.body
