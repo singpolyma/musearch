@@ -65,7 +65,7 @@ begin
 rescue DatabaseLockError
 	try_count += 1
 	raise $! unless try_count < 10
-	sleep 1
+	sleep 4
 	retry
 end
 
