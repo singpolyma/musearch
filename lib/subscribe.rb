@@ -67,7 +67,7 @@ def subscribe(topic, callback, secret=nil, &blk)
 
 	callback += (callback.index('?') ? '&' : '?') + "topic=#{u topic}"
 
-	hub = relative_to_absolute(hub, topic)
+	hub = relative_to_absolute(hub, topic).normalize
 	hub.scheme = 'https' # Try HTTPS first
 	body = {'hub.callback' => callback, 'hub.mode' => 'subscribe', 'hub.topic' => topic, 'hub.verify' => 'async'}
 	body['hub.secret'] = Digest::MD5.hexdigest("#{secret}#{topic}#{secret}") if secret
