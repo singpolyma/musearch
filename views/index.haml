@@ -5,8 +5,15 @@
 	!= include 'views/invisible_header.haml'
 
 	%body
-		%h1= title
+		%h1
+			%a{:href => $config['approot']}= title
 
 		!= include 'views/search_form.haml'
+
+		%h2 Add Another Microblog
+		%p Have a microblog site that's not being indexed? Have a PubSubHubBub-enabled feed for all the posts on your site?  Enter it here and the search engine will subscribe so that your site will be indexed.
+		%form(method="post" action="subscribe")
+			%input(type="text" name="topic")
+			%input(type="submit" value="Add")
 
 		!= include 'views/visible_footer.haml'

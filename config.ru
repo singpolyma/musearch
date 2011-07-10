@@ -15,6 +15,7 @@ require 'rack/accept_media_types'
 
 require 'lib/path_info_fix'
 require 'lib/subdirectory_routing'
+require 'lib/subscribe'
 require 'lib/util'
 require 'lib/xapian_schema'
 require 'lib/xml_feed_polyglot'
@@ -32,6 +33,11 @@ run HttpRouter.new {
 	get('/?').head.to { |env|
 		require 'controllers/index'
 		IndexController.new(env).render
+	}
+
+	post('/subscribe').to { |env|
+		require 'controllers/subscribe'
+		SubscribeController.new(env).render
 	}
 
 	get('/pshb').head.to { |env|

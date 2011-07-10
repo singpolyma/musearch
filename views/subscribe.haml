@@ -8,11 +8,6 @@
 		%h1
 			%a{:href => $config['approot']}= title
 
-		!= include 'views/search_form.haml'
+		%p= message
 
-
-		%h2 Search Results
-
-		%ul
-			!= include_for_each results, 'views/search_item.haml'
 		!= include 'views/visible_footer.haml'
