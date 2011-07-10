@@ -10,12 +10,13 @@ require 'yaml'
 require 'digest/md5'
 require 'hmac-sha1'
 require 'http_router'
+require 'nokogiri'
 require 'rack/accept_media_types'
 
 require 'lib/path_info_fix'
 require 'lib/subdirectory_routing'
 require 'lib/util'
-require 'lib/xapian-schema'
+require 'lib/xapian_schema'
 require 'lib/xml_feed_polyglot'
 
 $config = YAML::load_file('config.yaml')
@@ -34,6 +35,7 @@ run HttpRouter.new {
 	}
 
 	get('/pshb').head.to { |env|
+		req = ::Rack::Request.new(env)
 		# Honestly, we want all the data :)
 		[200, {}, req['hub.challenge']]
 	}
@@ -50,7 +52,13 @@ run HttpRouter.new {
 		end
 
 		# Set input encoding to what it has declared to be
-		data = data.force_encode(req.media_type_params['charset']) if req.media_type_params['charset']
+		if req.media_type_params['charset']
+			data = data.force_encode(req.media_type_params['charset']).encode('utf-8', :undef => :replace) rescue data.force_encoding('utf-8')
+		else
+			data.force_encoding('utf-8')
+		end
+		data.force_encoding('binary').encode('utf-8', :undef => :replace) unless data.valid_encoding?
+
 		meta = items = nil
 		case req.media_type
 			when 'application/rss+xml', 'application/rdf+xml', 'application/atom+xml'
@@ -62,6 +70,8 @@ run HttpRouter.new {
 		meta[:self] = req.GET['topic'] if req.GET['topic'] # We know the topic, so use it
 
 		meta[:author][:photo] = meta[:logo] if meta[:author] && meta[:logo]
+
+		xa = xapian_schema
 
 		items.each do |item|
 			to = Nokogiri::parse('<span>' + item[:content] + '</span>').search('.vcard').map {|el|
@@ -97,7 +107,7 @@ run HttpRouter.new {
 		rescue DatabaseLockError
 			try_count += 1
 			raise $! unless try_count < 10
-			sleep 1
+			sleep 4
 			retry
 		end
 
