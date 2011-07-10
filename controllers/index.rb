@@ -10,12 +10,18 @@ class IndexController < ApplicationController
 		end
 	end
 
-	def results
+	def raw_results
 		xa = xapian_schema
-		xa.search(@req['q'], :phrase => true, :collapse => :id,
-		          :fields => [:category, :in_reply_to, :bookmark, :author, :published, :to],
-		          :order => :published, :reverse => true).map do |match|
+		@results ||= xa.search(@req['q'], :phrase => true, :collapse => :id, :fields => [:category, :in_reply_to, :bookmark, :author, :published, :to], :order => :published, :reverse => true, :limit => 10, :page => (@req['page'] || 1))
+	end
+
+	def results
+		raw_results.map do |match|
 			match.values
 		end
+	end
+
+	def method_missing(msg, *args)
+		raw_results.send(msg, *args)
 	end
 end

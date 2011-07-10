@@ -15,4 +15,11 @@
 
 		%ul
 			!= include_for_each results, 'views/search_item.haml'
+
+		-if current_page > 1
+			%a{:rel => "prev",  :href => "?q=#{@req['q']}&page=#{current_page-1}"} « Previous
+
+		-if current_page < total_pages
+			%a{:rel => "next",  :href => "?q=#{@req['q']}&page=#{current_page+1}"} Next »
+
 		!= include 'views/visible_footer.haml'
