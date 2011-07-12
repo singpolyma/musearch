@@ -77,7 +77,7 @@ def xml_feed_polyglot(string)
 			item[:content].sub!(/<\/content>/, '')
 			if el.attributes['type'] == 'html'
 				# Always ends up HTML-safe
-				item[:content] = item[:content]
+				item[:content] = HTMLEntities.decode_entities(item[:content])
 			elsif el.attributes['type'] == 'text'
 				item[:content] = h(item[:content])
 			end
