@@ -12,7 +12,7 @@ class IndexController < ApplicationController
 
 	def raw_results
 		xa = xapian_schema
-		@results ||= xa.search(@req['q'], :phrase => true, :collapse => :id, :fields => [:category, :in_reply_to, :bookmark, :author, :published, :to], :order => :published, :reverse => true, :limit => 10, :page => (@req['page'] || 1))
+		@results ||= xa.search(@req['q'], :phrase => true, :collapse => :id, :fields => [:content, :category, :in_reply_to, :bookmark, :author, :published, :to], :order => :published, :reverse => true, :limit => 10, :page => (@req['page'] || 1))
 	end
 
 	def results
