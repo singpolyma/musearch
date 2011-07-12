@@ -48,10 +48,10 @@ end
 try_count = 0
 begin
 	xa.flush
-rescue DatabaseLockError
+rescue Exception
 	try_count += 1
-	raise $! unless try_count < 10
-	sleep 4
+	raise $! unless try_count < 15
+	sleep 5
 	retry
 end
 
