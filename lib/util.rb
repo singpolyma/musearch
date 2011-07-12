@@ -15,7 +15,7 @@ def an(o)
 end
 
 def strip_tags(s)
-	HTMLEntities.decode_entities(s.to_s.gsub(/<[^<]*>/, ' '))
+	HTMLEntities.decode_entities(s.to_s.gsub(/<[^<]*>/, ''))
 end
 
 # URI encode a string, based on CGI module
