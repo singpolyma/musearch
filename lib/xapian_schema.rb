@@ -52,7 +52,7 @@ module XapianFu
 			end
 			enquiry.query = query
 			ResultSet.new(:mset => enquiry.mset(offset, per_page), :current_page => page + 1,
-										:per_page => per_page, :corrected_query => qp.				corrected_query,
+										:per_page => per_page, :corrected_query => qp.corrected_query,
 										:database => self)
 		end
 	end
