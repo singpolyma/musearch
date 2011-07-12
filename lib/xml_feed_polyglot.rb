@@ -54,7 +54,7 @@ def xml_feed_polyglot(string)
 				el.write(item[:title])
 				item[:title].gsub!(/<[^>]+>/, '').strip!
 			elsif el.attributes['type'].to_s == 'html'
-				item[:title] = HTMLEntities.decode_entities(el.text)
+				item[:title] = el.text
 			else
 				item[:title] = el.text
 			end
@@ -64,11 +64,11 @@ def xml_feed_polyglot(string)
 		itemel.elements.each('./guid|./atom:id') {|el| item[:id] = el.text}
 		itemel.elements.each('./content:encoded') {|el|
 			# Always end up HTML-safe
-			item[:content] = HTMLEntities.decode_entities(el.text)
+			item[:content] = el.text
 		}
 		itemel.elements.each('./description') {|el|
 			# Always end up HTML-safe
-			item[:content] = HTMLEntities.decode_entities(el.text)
+			item[:content] = el.text
 		}
 		itemel.elements.each('./atom:content') {|el|
 			item[:content] = ''
@@ -77,7 +77,7 @@ def xml_feed_polyglot(string)
 			item[:content].sub!(/<\/content>/, '')
 			if el.attributes['type'] == 'html'
 				# Always ends up HTML-safe
-				item[:content] = HTMLEntities.decode_entities(item[:content])
+				item[:content] = item[:content]
 			elsif el.attributes['type'] == 'text'
 				item[:content] = h(item[:content])
 			end
