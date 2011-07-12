@@ -2,3 +2,4 @@
 %head
 	%title= title
 	!= each_tag stylesheets, '%link(rel="stylesheet" type="text/css" href=item)'
+	!= each_tag alternates, '%link{:rel => "alternate", :type => item[:type], :href => item[:href]}'

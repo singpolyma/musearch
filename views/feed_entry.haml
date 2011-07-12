@@ -1,0 +1,25 @@
+-#encoding: utf-8
+%entry
+	%id= item[:id]
+	%title= strip_tags(item[:content_full].force_encoding('utf-8'))
+	%content(type="html")= item[:content_full].force_encoding('utf-8')
+	%link{:rel => "alternate", :href => item[:bookmark]}
+	%published= item[:published].iso8601
+	%updated= item[:published].iso8601
+	!= each_tag item[:in_reply_to], '%thr:in-reply-to{:ref => item[:ref], :href => item[:href]}'
+	%author
+		-if item[:author][:fn]
+			%name= item[:author][:fn]
+		-if item[:author][:url]
+			%uri= item[:author][:url]
+		-if item[:author][:photo]
+			%link{:rel => 'avatar', :href => item[:author][:photo]}
+	!= each_tag item[:to], '%link{:rel => "mentioned", :title => item[:fn], :href => item[:url]}'
+	!= each_tag item[:category], '%category(term=item)'
+	%source
+		-if item[:source][:id]
+			%id= item[:source][:id]
+		-if item[:source][:title]
+			%title= item[:source][:title]
+		-if item[:source][:self]
+			%link{:rel => 'self', :href => item[:source][:self]}
